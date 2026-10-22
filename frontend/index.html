@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Music</title>
+        <script src="jsonview.js"></script>
+        <script src="endpoint-user.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+    </body>
+    <script>
+        document.body.innerHTML += "<h1 class='title'> 'Actor Costars API' </h1>";
+        useEndpoint('GET', '/api/actor/Leonardo DiCaprio/costar');
+        useEndpoint('GET', '/api/actor/Brad Pitt/costar');
+    </script>
+</html>
