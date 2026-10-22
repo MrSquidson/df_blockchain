@@ -7,21 +7,14 @@ const port = 3002;
 const server = express();
 server.use(express.static('frontend'));
 server.use(onEachRequest);
-server.get('/api/actor/:id/costar', onGetCostarsByActorId);
+server.get('/api/ticker/:cur/users', onGetUsersFromCurrency);
 server.listen(port, onServerReady);
 
-async function onGetCostarsByActorId(request, response) {
-    const actor_id = request.params.id;
+async function onGetUsersFromCurrency(request, response) {
+    const currency = request.params.cur;
     const result = await db.query(`
-        select distinct a2.stage_name as costar, m.title as movie_title, c2.role as role
-        from actors a1
-        join castings c1 on a1.actor_id = c1.actor_id
-        join castings c2 on c1.movie_id = c2.movie_id
-        join actors a2 on c2.actor_id = a2.actor_id
-        join movies m on c1.movie_id = m.id
-        where a1.stage_name = $1 and a2.stage_name <> $1
-    `, [actor_id]);
-    response.json(result.rows);
+        select distinct to_add + from_add as Users from trans where currency = $1`[currency]
+    )
 }
 
 function onServerReady() {
@@ -32,3 +25,55 @@ function onEachRequest(request, response, next) {
     console.log(new Date(), request.method, request.url);
     next();
 }
+
+
+async function onGetTransFromTxHash(request, response) {
+    const txHash = request.params.txHash;
+    const result = await db.query(`
+    select from_add as Sender, 
+    amount as Amount, 
+    cur.currency as Currency, 
+    to_add as Reciever, 
+    blocks.timestamp as Time
+    
+    from trans 
+    
+    join cur, 
+    join blocks, 
+    
+    where tx_hash = $1` [txHash]
+    )
+}
+
+async function blockExistsByHash(hash) {
+    const result = await db.query(
+        `SELECT EXISTS (
+            SELECT 1 FROM block
+            WHERE hash = $1
+        ) AS exists`,
+        [hash]
+    );
+
+    return result.rows[0].exists;
+}
+
+const hash = 'DIN_HASH_VÆRDI';
+
+const exists = await blockExistsByHash(hash);
+
+if (exists) {
+    console.log('Blokken findes i databasen');
+} else {
+    console.log('Blokken findes ikke i databasen');
+}
+
+
+SELECT
+    c.currency,
+SUM(
+    CASE
+        WHEN t.t_add =  'a0324425e7' THEN t.amount 
+        WHEN t.from_add = 'a0324425e7' THEN -t.amount 
+        ELSE 0 
+
+    END 
