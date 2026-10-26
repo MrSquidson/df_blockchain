@@ -12,6 +12,19 @@ server.get('/api/trades/:txHash', onGetTransFromTxHash);
 server.get('/api/exists/block/:blockHash', onGetBlockExistsByHash);
 server.listen(port, onServerReady);
 
+/*
+
+[TODO]:
+[x] • Hvilke adresser har været aktive, altså deltaget i en transaktion, med en given valuta?
+[x] • Hvilke overførsler skete i transaktionen med hash-værdien x? Hvornår fandt den sted?
+[/] • Er blokken med hash-værdien x eller højde n i databasen? Med hvilke transaktioner?
+[ ] • Hvilke kryptovalutaer har en given adresse været aktiv med? I hvilket tidsrum?
+[ ] • Hvor meget ejer adressen lige nu af hver kryptovaluta?
+[ ] • Hvad er den samlede USD værdi af adressen lige nu?
+[ ] • Hvor meget har adressen samlet set afsendt og modtaget i et givet tidsinterval – i hele den aktive periode, hele sidste år, i uge 13 2021, i forgårs, etc.?
+[ ] • Og hvad var de overførsler værd i USD på det tidspunkt, de fandt sted?
+
+*/
 async function onGetUsersFromCurrency(request, response) {
     const currencyName = request.params.cur;
     console.log(currencyName)
