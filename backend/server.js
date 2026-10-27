@@ -79,13 +79,16 @@ if (result.rows > 0){
 async function onGetBlockExistsByHash(request, response) {
     const blockHash = request.params.blockHash;
     const result = await db.query(
-        `SELECT EXISTS (
-            SELECT block_hash FROM blocks
-            WHERE block_hash = $1
-        ) AS exists`,
+        `SELECT EXISTS (SELECT b.block_hash) AS exists, 
+         ARRAY (select t.tx_hash where b.block_hash = $1) AS trans_hash 
+         FROM trans t
+         JOIN blocks b on t.block_height=b.block_height
+         WHERE b.block_hash = $1
+         GROUP BY b.block_hash, t.tx_hash
+         `,
         [blockHash]
     );
-    response.json(result.rows[0])
+    response.json(result.rows)
 }
 
 function onServerReady() {
