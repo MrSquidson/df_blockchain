@@ -179,7 +179,7 @@ async function onGetAddressHoldings(request, response) {
 async function onGetAddressTotalUSDValue(request, response) {
     const address = request.params.address;
     const result = await db.query(`
-        select sum(amount * c.usd_value) as total_usd_value from trans t
+        select sum(amount * ) as total_usd_value from trans t
         inner join cur c on c.currency_id=t.currency_id
         where t.from_add=$1 or t.to_add=$1
         `, [address]);
